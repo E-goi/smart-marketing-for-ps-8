@@ -33,6 +33,10 @@ For a workaround you can add this hook call to your **header.tpl**
 
 ### Changelog
 ```
+-- V.4.0.0
+   -- Add new Functionality to track all order status by Api
+   -- Bump plugin version to 4.0.0
+   
 -- V.3.0.9
    -- Added Track Engage event to capture product page views
    -- Bump plugin version to 3.0.9
