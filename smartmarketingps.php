@@ -3040,7 +3040,7 @@ class SmartMarketingPs extends Module
             $productReference = $product['product_reference'] ?? "";
             $productName = trim($product['product_name'] ?? "");
 
-            $uniqueId = !empty($attributeId) ? "{$productId}-{$attributeId}" : $productId;
+            $uniqueId = !empty($attributeId) ? "{$productId}_{$attributeId}" : $productId;
 
             $productList[] = [
                 "product_identifier" => (string)$uniqueId,
