@@ -1,7 +1,7 @@
 <?php
 function upgrade_module_4_0_0($module)
 {
-    PrestaShopLogger::addLog("[EGOI-PS8]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 4.0.0");
+    PrestaShopLogger::addLog("[EGOI-PS8]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.0");
 
     $return = true;
     $sql = array();
@@ -106,7 +106,7 @@ function upgrade_module_4_0_0($module)
         return false;
     }
 
-    PrestaShopLogger::addLog("[EGOI-PS8]::" . __FUNCTION__ . "::UPGRADE TO 4.0.0 SUCCESSFUL");
+    PrestaShopLogger::addLog("[EGOI-PS8]::" . __FUNCTION__ . "::UPGRADE TO 3.1.0 SUCCESSFUL");
     return true;
 }
 ?>
