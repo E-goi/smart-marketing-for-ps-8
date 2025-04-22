@@ -142,7 +142,7 @@ class SmartMarketingPs extends Module
         ],
         [
             'is_root' => false,
-            'name' => 'E-commerce (New)',
+            'name' => 'E-commerce (Beta)',
             'class_name' => 'Ecommerce',
             'visible' => false,
             'parent_class_name' => 'SmartMarketingPs',
