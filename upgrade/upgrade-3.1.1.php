@@ -1,5 +1,5 @@
 <?php
-function upgrade_module_3_1_0($module)
+function upgrade_module_3_1_1($module)
 {
     PrestaShopLogger::addLog("[EGOI-PS8]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.1");
 
@@ -22,10 +22,12 @@ function upgrade_module_3_1_0($module)
         }
     }
 
+
     if (!$return) {
         PrestaShopLogger::addLog("[EGOI-PS8]::" . __FUNCTION__ . "::ERROR: Stopping upgrade due to previous errors.");
         return false;
     }
+
 
     // Insert Egoi Basic Fields
     $states = [
@@ -37,10 +39,10 @@ function upgrade_module_3_1_0($module)
     ];
 
     foreach ($states as $state) {
-        if (!Db::getInstance()->insert('egoi_order_states', [
-            'egoi_id' => (int)$state['egoi_id'],
-            'name' => pSQL($state['name'])
-        ])) {
+        $sql = 'INSERT IGNORE INTO `'._DB_PREFIX_.'egoi_order_states` (`egoi_id`, `name`) 
+            VALUES ('.(int)$state['egoi_id'].', "'.pSQL($state['name']).'")';
+
+        if (!Db::getInstance()->execute($sql)) {
             PrestaShopLogger::addLog("[EGOI-PS8]::" . __FUNCTION__ . "::ERROR: Failed to insert egoi_order_state: " . $state['name']);
             return false;
         }
