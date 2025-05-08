@@ -109,7 +109,7 @@ $sql[_DB_PREFIX_.'egoi_prestashop_order_state_map'] = 'CREATE TABLE IF NOT EXIST
     PRIMARY KEY (`id`)
 ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
 
- $sql[_DB_PREFIX_.'drop_egoi_after_order_state_insert'] = '
+$sql[_DB_PREFIX_.'drop_egoi_after_order_state_insert'] = '
 	DROP TRIGGER IF EXISTS '._DB_PREFIX_.'egoi_after_order_state_insert;
 	';
 
