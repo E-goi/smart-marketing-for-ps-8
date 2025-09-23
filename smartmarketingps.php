@@ -1351,7 +1351,15 @@ class SmartMarketingPs extends Module
 
                 $selectedCatalog = Db::getInstance()->executeS("SELECT * FROM " . _DB_PREFIX_ . "egoi_active_catalogs WHERE catalog_id=".$catalog['catalog_id']);
 
-                $data = static::mapProduct($product, $langId, $currencyId, !empty($selectedCatalog[0]["sync_descriptions"]), !empty($selectedCatalog[0]["sync_categories"]), !empty($selectedCatalog[0]["sync_related_products"]));
+                $mapped = static::mapProduct($product, $langId, $currencyId, !empty($selectedCatalog[0]["sync_descriptions"]), !empty($selectedCatalog[0]["sync_categories"]), !empty($selectedCatalog[0]["sync_related_products"]), !empty($selectedCatalog[0]["sync_stock"]), !empty($selectedCatalog[0]["sync_variations"]));
+
+                if (!empty($mapped) && is_array($mapped)) {
+                    $data = $mapped;
+                }else{
+                    return false;
+                }
+
+                $syncVariations = !empty($selectedCatalog[0]["sync_variations"]);
 
                 $result = $this->apiv3->createProduct($catalog['catalog_id'], $data);
 
@@ -1361,6 +1369,38 @@ class SmartMarketingPs extends Module
 
                    $this->apiv3->updateProduct($catalog['catalog_id'], $id, $data);
 
+                }
+
+                if ($syncVariations) {
+                    $prodId = is_array($product) ? (int)$product['id_product'] : (int)$product->id;
+                    $ipaList = Product::getProductAttributesIds($prodId);
+
+                    if (!empty($ipaList)) {
+                        foreach ($ipaList as $ipaRow) {
+                            $ipa = (int)$ipaRow['id_product_attribute'];
+
+                            $variant = SmartMarketingPs::mapProductVariant(
+                                $prodId,
+                                $ipa,
+                                $langId,
+                                $currencyId,
+                                !empty($selectedCatalog[0]["sync_descriptions"]),
+                                !empty($selectedCatalog[0]["sync_categories"]),
+                                !empty($selectedCatalog[0]["sync_related_products"]),
+                                !empty($selectedCatalog[0]["sync_stock"])
+                            );
+
+                            if (!empty($variant) && is_array($variant)) {
+                                $variantResult = $this->apiv3->createProduct($catalog['catalog_id'], $variant);
+
+                                if (!empty($variantResult['errors']['product_already_exists'])) {
+                                    $variantId = $variant['product_identifier'];
+                                    unset($variant['product_identifier']);
+                                    $this->apiv3->updateProduct($catalog['catalog_id'], $variantId, $variant);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -1403,7 +1443,14 @@ class SmartMarketingPs extends Module
 
                 $selectedCatalog = Db::getInstance()->executeS("SELECT * FROM " . _DB_PREFIX_ . "egoi_active_catalogs WHERE catalog_id=".$catalog['catalog_id']);
 
-                $data = static::mapProduct($product, $langId, $currencyId, !empty($selectedCatalog[0]["sync_descriptions"]), !empty($selectedCatalog[0]["sync_categories"]), !empty($selectedCatalog[0]["sync_related_products"]));
+                $syncVariations = !empty($selectedCatalog[0]["sync_variations"]);
+                $mapped = static::mapProduct($product, $langId, $currencyId, !empty($selectedCatalog[0]["sync_descriptions"]), !empty($selectedCatalog[0]["sync_categories"]), !empty($selectedCatalog[0]["sync_related_products"]), !empty($selectedCatalog[0]["sync_stock"]), !empty($selectedCatalog[0]["sync_variations"]));
+
+                if (!empty($mapped) && is_array($mapped)) {
+                    $data = $mapped;
+                }else{
+                    return false;
+                }
 
                 $result = $this->apiv3->createProduct($catalog['catalog_id'], $data);
 
@@ -1412,6 +1459,38 @@ class SmartMarketingPs extends Module
                     unset($data['product_identifier']);
                     $this->apiv3->updateProduct($catalog['catalog_id'], $id, $data);
 
+                }
+
+                if ($syncVariations) {
+                    $prodId = is_array($product) ? (int)$product['id_product'] : (int)$product->id;
+                    $ipaList = Product::getProductAttributesIds($prodId);
+
+                    if (!empty($ipaList)) {
+                        foreach ($ipaList as $ipaRow) {
+                            $ipa = (int)$ipaRow['id_product_attribute'];
+
+                            $variant = SmartMarketingPs::mapProductVariant(
+                                $prodId,
+                                $ipa,
+                                $langId,
+                                $currencyId,
+                                !empty($selectedCatalog[0]["sync_descriptions"]),
+                                !empty($selectedCatalog[0]["sync_categories"]),
+                                !empty($selectedCatalog[0]["sync_related_products"]),
+                                !empty($selectedCatalog[0]["sync_stock"])
+                            );
+
+                            if (!empty($variant) && is_array($variant)) {
+                                $variantResult = $this->apiv3->createProduct($catalog['catalog_id'], $variant);
+
+                                if (!empty($variantResult['errors']['product_already_exists'])) {
+                                    $variantId = $variant['product_identifier'];
+                                    unset($variant['product_identifier']);
+                                    $this->apiv3->updateProduct($catalog['catalog_id'], $variantId, $variant);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -1474,7 +1553,7 @@ class SmartMarketingPs extends Module
         return true;
     }
 
-    public static function mapProduct($product, $lang, $currency, $sync_descriptions = true, $sync_categories = true, $sync_related_products = true)
+    public static function mapProduct($product, $lang, $currency, $sync_descriptions = true, $sync_categories = true, $sync_related_products = true, $sync_stock = false, $sync_variations = false)
     {
         $desc = '';
         $categories = [];
@@ -1487,6 +1566,26 @@ class SmartMarketingPs extends Module
             $product = new Product($product->id, true, $lang);
         } else {
             return null; // produto inválido
+        }
+
+        // if $sync_stock is true we need to validate if the product is instock
+        if (!empty($sync_stock)){
+            $shopId = (int)Context::getContext()->shop->id;
+            $totalQty = (int)StockAvailable::getQuantityAvailableByProduct((int)$product->id, 0, $shopId);
+            PrestaShopLogger::addLog(
+                "[EGOI-PS17]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.1 . " . json_encode($shopId)
+            );
+            PrestaShopLogger::addLog(
+                "[EGOI-PS17]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.1 . " . json_encode($totalQty)
+            );
+            if ($sync_stock && $totalQty <= 0) {
+                return array();
+            }
+        }
+
+        if ($sync_descriptions) {
+            $descRaw = !empty($product->description_short) ? $product->description_short : $product->description;
+            $desc = !empty($descRaw) ? filter_var(substr($descRaw, 0, 800), FILTER_SANITIZE_STRING) : '';
         }
 
         $link = new Link();
@@ -1556,6 +1655,112 @@ class SmartMarketingPs extends Module
             'brand' => $product->manufacturer_name ?? '',
             'categories' => $categories,
             'related_products' => $relatedProducts
+        ];
+    }
+
+    public static function mapProductVariant(
+        int $productId,
+        int $ipa,                  // id_product_attribute
+        int $langId,
+        int $currencyId,
+        bool $sync_descriptions = true,
+        bool $sync_categories   = true,
+        bool $sync_related      = true,
+        bool $sync_stock        = false
+    ) {
+        // Carrega produto pai
+        $product = new Product($productId, true, $langId);
+        if (!$product || (int)$product->id <= 0 || (int)$product->active !== 1) {
+            return null;
+        }
+
+        // Stock por combinação (na shop atual)
+        if ($sync_stock) {
+            $shopId = (int)Context::getContext()->shop->id;
+            $qty    = (int)StockAvailable::getQuantityAvailableByProduct($productId, $ipa, $shopId);
+            if ($qty <= 0) return null; // ignorar variação sem stock
+        }
+
+        $link = new Link();
+
+        // Descrição (herda do pai)
+        $desc = '';
+        if ($sync_descriptions) {
+            $desc = empty($product->description_short)
+                ? filter_var(substr((string)$product->description, 0, 800), FILTER_SANITIZE_STRING)
+                : filter_var((string)$product->description_short, FILTER_SANITIZE_STRING);
+        }
+
+        // Preços específicos da combinação
+        $price     = Product::getPriceStatic($productId, true, $ipa, 2, ',', false, false);
+        $salePrice = Product::getPriceStatic($productId, true, $ipa, 2, ',', false, true);
+        if ($price == $salePrice) $salePrice = 0;
+
+        // Link direto para a variação (passa o $ipa) + moeda
+        $url = $link->getProductLink(
+            $product,      // Product
+            null,          // alias
+            null,          // category
+            null,          // ean
+            $langId,       // lang
+            null,          // shop
+            $ipa,          // <<< id_product_attribute
+            false,         // force_routes
+            false,         // relative_protocol
+            true           // add_anchor
+        );
+        $url .= (strpos($url, '?') !== false ? '&' : '?') . 'SubmitCurrency=1&id_currency=' . (int)$currencyId;
+
+        // Imagem: da combinação -> fallback capa
+        $ssl = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+        $imageUrl = '';
+        $combImgs = $product->getCombinationImages($langId);
+        if (!empty($combImgs[$ipa][0]['id_image'])) {
+            $imageId = (int)$combImgs[$ipa][0]['id_image'];
+            $imageUrl = $ssl . $link->getImageLink(
+                    isset($product->link_rewrite) ? $product->link_rewrite : $product->name,
+                    $imageId,
+                    'home_default'
+                );
+        } else {
+            $cover = $product->getCover($product->id);
+            if (!empty($cover['id_image'])) {
+                $imageUrl = $ssl . $link->getImageLink(
+                        isset($product->link_rewrite) ? $product->link_rewrite : $product->name,
+                        (int)$cover['id_image'],
+                        'home_default'
+                    );
+            }
+        }
+
+        $categories = [];
+        if ($sync_categories) {
+            $categories = static::buildBreadcrumbs($product->getCategories(), $langId);
+        }
+
+        $relatedProducts = [];
+        if ($sync_related) {
+            $accs = Product::getAccessoriesLight($langId, $productId);
+            foreach ($accs as $a) $relatedProducts[] = $a['id_product'];
+        }
+
+        $comb = new Combination($ipa);
+        $sku  = $comb->reference ?: $product->reference;
+
+        $uniqueId = !empty($ipa) ? "{$productId}_{$ipa}" : $productId;
+
+        return [
+            'product_identifier' => $uniqueId,
+            'name'         => $product->name,
+            'description'  => $desc,
+            'sku'          => $sku,
+            'link'         => $url,
+            'image_link'   => $imageUrl,
+            'price'        => $price,
+            'sale_price'   => $salePrice,
+            'brand'        => $product->manufacturer_name,
+            'categories'   => $categories,
+            'related_products' => $relatedProducts,
         ];
     }
 
