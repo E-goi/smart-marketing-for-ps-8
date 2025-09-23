@@ -159,7 +159,7 @@ function upgrade_module_3_1_5($module)
         return false;
     }
 
-    PrestaShopLogger::addLog("[EGOI-PS8]::" . __FUNCTION__ . "::UPGRADE TO 3.1.4 SUCCESSFUL");
+    PrestaShopLogger::addLog("[EGOI-PS8]::" . __FUNCTION__ . "::UPGRADE TO 3.1.5 SUCCESSFUL");
     return true;
 }
 ?>
