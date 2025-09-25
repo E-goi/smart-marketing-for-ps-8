@@ -178,10 +178,10 @@ class SmartMarketingPs extends Module
 		// Module metadata
 		$this->name = 'smartmarketingps';
 	    $this->tab = 'advertising_marketing';
-	    $this->version = '3.1.4';
+	    $this->version = '3.2.0';
 	    $this->author = 'E-goi';
 	    $this->need_instance = 1;
-	    $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
+	    $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '9.0.99');
 	    $this->bootstrap = true;
 
 	    // module key
@@ -191,6 +191,9 @@ class SmartMarketingPs extends Module
         $this->prod_cache = dirname(__FILE__).'/../../app/cache/prod/class_index.php';
 
 	    parent::__construct();
+
+	    // PrestaShop v9 compatibility check
+	    $this->checkPrestashopVersion();
 
 	    // Name & Description
 	    $this->displayName = $this->l('Smart Marketing');
@@ -507,7 +510,7 @@ class SmartMarketingPs extends Module
                 'actionOrderStatusPostUpdate',
                 'actionObjectCategoryUpdateAfter',
                 'actionObjectCategoryDeleteAfter',
-                'hookActionObjectProductAddAfter',
+                'actionObjectProductAddAfter',
                 'actionObjectProductUpdateAfter',
                 'actionObjectProductDeleteAfter',
                 'actionObjectSpecificPriceAddAfter',
@@ -518,7 +521,9 @@ class SmartMarketingPs extends Module
                 'displayTop',
                 'displayFooter',
                 'egoiDisplayTE',
-                'displayFooterProduct'
+                'displayFooterProduct',
+                'displayBackOfficeHeader',
+                'actionFrontControllerSetMedia'
             )
         );
     }
@@ -3417,6 +3422,22 @@ class SmartMarketingPs extends Module
             return $prefix . '-' . $number;
         }
         return '';
+    }
+
+    /**
+     * Check PrestaShop version compatibility for v9
+     */
+    private function checkPrestashopVersion()
+    {
+        if (version_compare(_PS_VERSION_, '9.0.0', '>=')) {
+            // PrestaShop v9+ specific configurations
+            $this->ps_versions_compliancy['max'] = '9.0.99';
+
+            // Enable cache optimization for v9
+            if (defined('_PS_CACHE_ENABLED_') && _PS_CACHE_ENABLED_) {
+                $this->cache_permissions = 0775;
+            }
+        }
     }
 
 
