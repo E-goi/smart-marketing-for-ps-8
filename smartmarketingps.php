@@ -15,7 +15,7 @@ if (!defined('_PS_VERSION_')) {
 class SmartMarketingPs extends Module
 {
 
-    const PLUGIN_KEY = 'b2d226e839b116c38f53204205c8410c';
+    const PLUGIN_KEY = 'bea4635ac25acde328b46e9202d98cba';
 
     const ACTION_CRON_TIME_CONFIGURATION = 'egoi_action_cron_time';
     const ADDRESS_CRON_TIME_CONFIGURATION = 'egoi_address_cron_time';
@@ -446,6 +446,10 @@ class SmartMarketingPs extends Module
             ['prestashop_state_id' => 7, 'egoi_id' => 3, 'type' => 'order'],  // Refunded -> cancelled
             ['prestashop_state_id' => 11, 'egoi_id' => 2, 'type' => 'order'], // Remote payment accepted -> pending
             ['prestashop_state_id' => 4, 'egoi_id' => 4, 'type' => 'order'],  // Shipped -> completed
+            ['prestashop_state_id' => 14, 'egoi_id' => 4, 'type' => 'order'],  // Waiting for payment -> pending
+            ['prestashop_state_id' => 15, 'egoi_id' => 4, 'type' => 'order'],  // Partial refund -> completed
+            ['prestashop_state_id' => 16, 'egoi_id' => 4, 'type' => 'order'],  // Partial payment -> pending
+            ['prestashop_state_id' => 17, 'egoi_id' => 4, 'type' => 'order'],  // Authorized. To be captured by merchant -> completed
         ];
 
         $orderStates = OrderState::getOrderStates((int)$this->context->language->id);
@@ -2699,6 +2703,54 @@ class SmartMarketingPs extends Module
 	public function hookCart($params)
 	{
 		$this->addToCart($params);
+	}
+
+	/**
+	 * Hook for actionFrontControllerSetMedia
+	 *
+	 * @param array $params
+	 * @return void
+	 */
+	public function hookActionFrontControllerSetMedia($params)
+	{
+		// Add media assets for frontend controllers
+		return;
+	}
+
+	/**
+	 * Hook for displayBackOfficeHeader
+	 *
+	 * @param array $params
+	 * @return string
+	 */
+	public function hookDisplayBackOfficeHeader($params)
+	{
+		// Add content to back office header
+		return '';
+	}
+
+	/**
+	 * Hook for displayFooter
+	 *
+	 * @param array $params
+	 * @return string
+	 */
+	public function hookDisplayFooter($params)
+	{
+		// Add content to footer
+		return '';
+	}
+
+	/**
+	 * Hook for displayHome
+	 *
+	 * @param array $params
+	 * @return string
+	 */
+	public function hookDisplayHome($params)
+	{
+		// Add content to home page
+		return '';
 	}
 
 	/**

@@ -2,7 +2,7 @@
 <module>
     <name>smartmarketingps</name>
     <displayName><![CDATA[Smart Marketing]]></displayName>
-    <version><![CDATA[3.1.4]]></version>
+    <version><![CDATA[3.2.0]]></version>
     <description><![CDATA[Sincronize facilmente os seus contatos Prestashop com o E-goi.]]></description>
     <author><![CDATA[E-goi]]></author>
     <tab><![CDATA[advertising_marketing]]></tab>
@@ -10,4 +10,9 @@
     <is_configurable>1</is_configurable>
     <need_instance>1</need_instance>
 	<limited_countries></limited_countries>
+
+    <ps_versions_compliancy>
+        <min>1.7.0.0</min>
+        <max>9.9.9.9</max>
+    </ps_versions_compliancy>
 </module>

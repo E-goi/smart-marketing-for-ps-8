@@ -118,11 +118,31 @@ abstract class SmartMarketingBaseController extends ModuleAdminController
      * @param $isNewTheme
      * @return void
      */
-	public function setMedia($isNewTheme = false)
-	{
-		$this->addJquery();
-		$this->addCSS($this->_path. '/views/css/main.css');
-		return parent::setMedia($isNewTheme);
+    public function setMedia($isNewTheme = false)
+    {
+        Media::addJsDef([]);
+        $this->addCSS($this->_path . '/views/css/main.css');
+        $this->addJS(_PS_JS_DIR_ . 'jquery/jquery-3.6.0.min.js');
+        return parent::setMedia($isNewTheme);
+    }
+
+    /**
+     * Translates a string
+     *
+     * @param string $string The string to translate
+     * @param array $params Parameters to replace in the string
+     * @param string|null $domain The domain of the translation
+     * @param string|null $locale The locale of the translation
+     * @return string The translated string
+     */
+    protected function l($string, $params = [], $domain = null, $locale = null)
+    {
+        return \Context::getContext()->getTranslator()->trans(
+            $string,
+            $params,
+            $domain ?: 'Modules.Smartmarketingps.Admin',
+            $locale
+        );
     }
 
 	/**

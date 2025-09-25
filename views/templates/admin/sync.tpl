@@ -258,7 +258,8 @@
 			<tr>
 				<td colspan="2" style="text-align: right;">
 					<input type="hidden" name="token" value="{$token|escape:'htmlall':'UTF-8'}">
-					<input type='submit' name='action_add' id='action_add' value="1" style="display: none;">
+					<input type='hidden' name='action_add' id='action_add' value="">
+					<button type="submit" id="save_settings_btn" style="display: none;" name="action_add" value="1">Save</button>
 				</td>
 			</tr>
 		</table>

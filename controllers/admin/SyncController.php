@@ -69,9 +69,26 @@ class SyncController extends SmartMarketingBaseController
 
         $this->page_header_toolbar_btn['save-and-stay'] = array(
             'short' => $this->l('Save Settings'),
-            'href' => '#',
+            'href' => 'javascript:void(0)',
             'desc' => $this->l('Save Settings'),
-            'js' => $this->l('$( \'#action_add\' ).click();')
+            'class' => 'save-settings-btn',
+            'js' => '
+                console.log("Save button clicked");
+                var form = document.querySelector("form");
+                var actionInput = document.getElementById("action_add");
+                if (actionInput) {
+                    actionInput.value = "1";
+                    console.log("action_add set to 1");
+                } else {
+                    console.log("action_add field not found");
+                }
+                if (form) {
+                    form.submit();
+                } else {
+                    console.log("form not found");
+                }
+                return false;
+            '
         );
 
         // Toolbar button for documentation
@@ -101,9 +118,16 @@ class SyncController extends SmartMarketingBaseController
 	public function initContent()
 	{
 		parent::initContent();
+
+		PrestaShopLogger::addLog("initContent - has_api_key: " . ($this->has_api_key ? 'true' : 'false'), 1);
+		PrestaShopLogger::addLog("initContent - smart_api_key config: " . Configuration::get('smart_api_key'), 1);
+		PrestaShopLogger::addLog("initContent - isValid: " . ($this->isValid() ? 'true' : 'false'), 1);
+		PrestaShopLogger::addLog("initContent - POST not empty: " . (!empty($_POST) ? 'true' : 'false'), 1);
+		PrestaShopLogger::addLog("initContent - action_add set: " . (isset($_POST['action_add']) ? 'true' : 'false'), 1);
+
 		if ($this->isValid()) {
 
-			if(!empty($_POST)) {
+			if(!empty($_POST) && isset($_POST['action_add'])) {
 				$this->saveSync();
 			}
 
@@ -201,13 +225,26 @@ class SyncController extends SmartMarketingBaseController
 	 * 
 	 * @return mixed
 	 */
-	protected function saveSync() 
+	protected function saveSync()
 	{
+		// Debug logging
+		PrestaShopLogger::addLog("SaveSync called - action_add: " . Tools::getValue('action_add'), 1);
+		PrestaShopLogger::addLog("SaveSync - POST data: " . json_encode($_POST), 1);
+
 		if(!empty(Tools::getValue('action_add'))) {
 
 			$list = Tools::getValue('list');
 			$sync = Tools::getValue('enable');
 			$role = Tools::getValue('role');
+
+			PrestaShopLogger::addLog("SaveSync - list: $list, sync: $sync, role: $role", 1);
+
+			// Validate required fields
+			if (empty($list)) {
+				$this->errors[] = $this->l('Please select a list');
+				PrestaShopLogger::addLog("SaveSync - Error: Please select a list", 1);
+				return false;
+			}
 
             $track_state = Tools::getValue('track_state', 0);
             $nsync = Tools::getValue('newsletter_sync', 0);
@@ -232,6 +269,12 @@ class SyncController extends SmartMarketingBaseController
             }
 
             $clientData = Cache::retrieve($cache_id);
+
+            if (empty($clientData) || !isset($clientData['general_info']['client_id'])) {
+                $this->errors[] = $this->l('Error getting client information from API');
+                return false;
+            }
+
             $client = $clientData['general_info']['client_id'];
 
             $cache_id = 'QUERY::SELECT * FROM '._DB_PREFIX_.'egoi WHERE client_id='.(int)$client;
@@ -271,10 +314,29 @@ class SyncController extends SmartMarketingBaseController
 			);
 			
 			if(isset($res['client_id']) && ($res['client_id'])) {
-				return Db::getInstance()->update('egoi', $values, "client_id = ".(int)$client);
+				$result = Db::getInstance()->update('egoi', $values, "client_id = ".(int)$client);
+				if ($result) {
+					$this->confirmations[] = $this->l('Settings saved');
+					// Clear cache after successful save
+					Cache::clean('getLists::*');
+					Cache::clean('SELECT * FROM '._DB_PREFIX_.'egoi*');
+					Cache::clean('QUERY::SELECT * FROM '._DB_PREFIX_.'egoi*');
+				} else {
+					$this->errors[] = $this->l('Error saving settings');
+				}
+				return $result;
 			}else{
-				$this->assign('success_message', $this->displaySuccess($this->l('Settings saved')));
-				return Db::getInstance()->insert('egoi', $values);
+				$result = Db::getInstance()->insert('egoi', $values);
+				if ($result) {
+					$this->confirmations[] = $this->l('Settings saved');
+					// Clear cache after successful save
+					Cache::clean('getLists::*');
+					Cache::clean('SELECT * FROM '._DB_PREFIX_.'egoi*');
+					Cache::clean('QUERY::SELECT * FROM '._DB_PREFIX_.'egoi*');
+				} else {
+					$this->errors[] = $this->l('Error saving settings');
+				}
+				return $result;
 			}
 
 		}else{

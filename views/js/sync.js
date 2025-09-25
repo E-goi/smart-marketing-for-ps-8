@@ -428,4 +428,49 @@ $(document).ready(function() {
 			$('#egoi_track_json' ).hide();
 		}
 	});
+
+	// Debug: Log all toolbar buttons
+	console.log('Toolbar buttons found:', $('.toolbar_btn, .btn-toolbar a, .page-header-toolbar a').length);
+
+	// Force form submission for PrestaShop 9 compatibility - multiple selectors
+	$(document).on('click', 'a[href="#"], .toolbar_btn, .page-header-toolbar a', function(e) {
+		var $this = $(this);
+		var text = $this.text().trim();
+		var title = $this.attr('data-original-title') || $this.attr('title') || '';
+
+		console.log('Clicked element:', text, title);
+
+		if (text.indexOf('Save Settings') !== -1 ||
+			title.indexOf('Save Settings') !== -1 ||
+			$this.hasClass('save-and-stay')) {
+			e.preventDefault();
+			console.log('Submitting form...');
+
+			// Ensure action_add field exists and is set
+			var actionInput = $('#action_add');
+			if (actionInput.length === 0) {
+				console.log('action_add field not found, creating it');
+				$('form').append('<input type="hidden" name="action_add" id="action_add" value="1">');
+			} else {
+				console.log('action_add field found, setting value');
+				actionInput.val('1');
+			}
+
+			$('form').submit();
+		}
+	});
+
+	// Fallback: Direct click handler for any save button
+	$(document).on('click', function(e) {
+		var $target = $(e.target);
+		if ($target.is('a') && $target.attr('href') === '#') {
+			var text = $target.text().trim();
+			if (text.indexOf('Save Settings') !== -1) {
+				e.preventDefault();
+				console.log('Fallback: Submitting form...');
+				$('#action_add').val('1');
+				$('form').submit();
+			}
+		}
+	});
 });
