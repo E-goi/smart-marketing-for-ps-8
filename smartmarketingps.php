@@ -1747,11 +1747,25 @@ class SmartMarketingPs extends Module
         $comb = new Combination($ipa);
         $sku  = $comb->reference ?: $product->reference;
 
+        $variantName = $product->name;
+        if ($ipa > 0) {
+            $attributes = $product->getAttributeCombinations($langId);
+            $combinationAttributes = [];
+            foreach ($attributes as $attribute) {
+                if ((int)$attribute['id_product_attribute'] === $ipa) {
+                    $combinationAttributes[] = $attribute['attribute_name'];
+                }
+            }
+            if (!empty($combinationAttributes)) {
+                $variantName = $product->name . ' - ' . implode(', ', $combinationAttributes);
+            }
+        }
+
         $uniqueId = !empty($ipa) ? "{$productId}_{$ipa}" : $productId;
 
         return [
             'product_identifier' => $uniqueId,
-            'name'         => $product->name,
+            'name'         => $variantName,
             'description'  => $desc,
             'sku'          => $sku,
             'link'         => $url,
