@@ -141,7 +141,9 @@ class ProductsController extends SmartMarketingBaseController
             $data = array(
                 'title' => 'Prestashop_' . $_POST['egoi-catalog-name'],
                 'language' => $_POST['egoi-catalog-language'],
-                'currency' => $_POST['egoi-catalog-currency']
+                'currency' => $_POST['egoi-catalog-currency'],
+                'domain' => $domain,
+                'default' => false,
             );
 
             $result = $this->apiv3->createCatalog($data);
