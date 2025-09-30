@@ -1761,7 +1761,7 @@ class SmartMarketingPs extends Module
             }
         }
 
-        $uniqueId = !empty($ipa) ? "{$productId}_{$ipa}" : $productId;
+        $uniqueId = !empty($ipa) ? "{$productId}-{$ipa}" : $productId;
 
         return [
             'product_identifier' => $uniqueId,
@@ -3409,7 +3409,7 @@ class SmartMarketingPs extends Module
             $productReference = $product['product_reference'] ?? "";
             $productName = trim($product['product_name'] ?? "");
 
-            $uniqueId = !empty($attributeId) ? "{$productId}_{$attributeId}" : $productId;
+            $uniqueId = !empty($attributeId) ? "{$productId}-{$attributeId}" : $productId;
             $categories = $this->getProductCategoriesPath($productId, (int)$order->id_lang);
 
             $productList[] = [
@@ -3461,7 +3461,7 @@ class SmartMarketingPs extends Module
         foreach ($products as $product) {
             $productId   = $product['id_product'] ?? '';
             $attributeId = $product['id_product_attribute'] ?? ($product['product_attribute_id'] ?? '');
-            $uniqueId    = !empty($attributeId) ? "{$productId}_{$attributeId}" : (string)$productId;
+            $uniqueId    = !empty($attributeId) ? "{$productId}-{$attributeId}" : (string)$productId;
 
             $productName        = trim($product['name'] ?? ($product['product_name'] ?? ''));
             $productReference   = (string)($product['reference'] ?? ($product['product_reference'] ?? ''));
