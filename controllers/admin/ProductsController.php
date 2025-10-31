@@ -129,11 +129,6 @@ class ProductsController extends SmartMarketingBaseController
                 $variationSync = 1;
             }
 
-            PrestaShopLogger::addLog(
-                "[EGOI-PS17]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.1 . " . json_encode($_POST)
-            );
-
-
             $baseUrl = _PS_BASE_URL_;
             $parsedUrl = parse_url($baseUrl);
             $domain = $parsedUrl['host'] ?? '';
@@ -265,16 +260,16 @@ class ProductsController extends SmartMarketingBaseController
             }
 
             if ($syncVariations) {
-                PrestaShopLogger::addLog(
+                DebugLogger::log(
                     "[EGOI-PS17]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.1 . " . json_encode($syncVariations)
                 );
                 $prodId = is_array($product) ? (int)$product['id_product'] : (int)$product->id;
                 $ipaList = Product::getProductAttributesIds($prodId);
 
-                PrestaShopLogger::addLog(
+                DebugLogger::log(
                     "[EGOI-PS17]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.1 . " . json_encode($prodId)
                 );
-                PrestaShopLogger::addLog(
+                DebugLogger::log(
                     "[EGOI-PS17]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.1 . " . json_encode($ipaList)
                 );
                 if (!empty($ipaList)) {

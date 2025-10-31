@@ -540,7 +540,7 @@ class SyncController extends SmartMarketingBaseController
                     $this->apiv3->createContact($list_id, ['base' => $flatContact]);
                 }
             } else {
-                PrestaShopLogger::addLog("[EGOI-PS8]::" . __FUNCTION__ . "::Erro - unique contact without email", 3);
+                DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::Erro - unique contact without email", 3);
             }
         } else {
             $this->apiv3->addSubscriberBulk($list_id, $importContacts);
