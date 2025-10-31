@@ -1,5 +1,5 @@
 <?php
-function upgrade_module_3_1_5($module)
+function upgrade_module_3_1_6($module)
 {
     DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.4");
 
@@ -201,7 +201,7 @@ function upgrade_module_3_1_5($module)
         return false;
     }
 
-    DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::UPGRADE TO 3.1.5 SUCCESSFUL");
+    DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::UPGRADE TO 3.1.6 SUCCESSFUL");
     return true;
 }
 ?>
