@@ -295,3 +295,15 @@ $_MODULE['<{smartmarketingps}prestashop>custom_information_88082c48100d134488901
 $_MODULE['<{smartmarketingps}prestashop>balance_8610be9376aa2240dbd0d765cb2ccfe0'] = 'Saldo en E-goi';
 $_MODULE['<{smartmarketingps}prestashop>language_selection_4994a8ffeba4ac3140beb89e8d41f174'] = 'Idioma';
 $_MODULE['<{smartmarketingps}prestashop>language_selection_dfbcfc41aeacad10a7a893c01983e5aa'] = 'Idioma del contenido del mensaje SMS.';
+$_MODULE['<{smartmarketingps}prestashop>accountcontroller_bea8d9e6a0d57c4a264756b4f9822ed9'] = 'Mi cuenta';
+$_MODULE['<{smartmarketingps}prestashop>smsnotificationscontroller_73afa235b0ac76bdeef6b84fec3a7399'] = 'Notificaciones SMS';
+$_MODULE['<{smartmarketingps}prestashop>config_0acc65b9c290cc6e14242ad23df2a251'] = '¡Clave API guardada con éxito!';
+$_MODULE['<{smartmarketingps}prestashop>config_7e1879a344d31fc7af22d2371f50954d'] = '¡Error al guardar la clave API!';
+$_MODULE['<{smartmarketingps}prestashop>config_d0d662a58cdca5c09ec890dd05dafaee'] = '¡Modo de depuración guardado con éxito!';
+$_MODULE['<{smartmarketingps}prestashop>config_2889a6397959c60e68de8ddaeb908648'] = '¡Error al guardar el modo de depuración!';
+$_MODULE['<{smartmarketingps}prestashop>config_3f151d434fb49b86571704d9194d0237'] = 'Para obtener su clave API, inicie sesión en la cuenta de E-goi BO. Vaya a su menú de usuario (esquina superior derecha), seleccione "Integraciones" y copie la clave API de su cuenta.';
+$_MODULE['<{smartmarketingps}prestashop>config_a82c4ea6352017b8cbe19837e6f2a4af'] = 'Modo de depuración';
+$_MODULE['<{smartmarketingps}prestashop>config_896064c0e07ebc77b085975fb8dae297'] = 'Habilite esta opción para registrar las acciones del módulo. Útil para solucionar problemas o fines de soporte.';
+$_MODULE['<{smartmarketingps}prestashop>config_93cba07454f06a4a960172bbd6e2a435'] = 'Sí';
+$_MODULE['<{smartmarketingps}prestashop>config_bafd7322c6e97d25b6299b5d6fe8920b'] = 'No';
+$_MODULE['<{smartmarketingps}prestashop>config_1c049ce8fc1ed4190a568ed3e8f64a33'] = '¡Error al guardar el modo de depuración!';

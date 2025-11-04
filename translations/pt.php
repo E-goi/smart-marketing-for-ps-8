@@ -297,3 +297,14 @@ $_MODULE['<{smartmarketingps}prestashop>custom_information_88082c48100d134488901
 $_MODULE['<{smartmarketingps}prestashop>balance_8610be9376aa2240dbd0d765cb2ccfe0'] = 'Saldo no E-goi';
 $_MODULE['<{smartmarketingps}prestashop>language_selection_4994a8ffeba4ac3140beb89e8d41f174'] = 'Idioma';
 $_MODULE['<{smartmarketingps}prestashop>language_selection_dfbcfc41aeacad10a7a893c01983e5aa'] = 'Idioma do conteúdo da mensagem SMS.';
+
+$_MODULE['<{smartmarketingps}prestashop>config_0acc65b9c290cc6e14242ad23df2a251'] = 'Chave API gravada com sucesso!';
+$_MODULE['<{smartmarketingps}prestashop>config_7e1879a344d31fc7af22d2371f50954d'] = 'Erro ao gravar a chave API!';
+$_MODULE['<{smartmarketingps}prestashop>config_d0d662a58cdca5c09ec890dd05dafaee'] = 'Modo de Debug gravado com sucesso!';
+$_MODULE['<{smartmarketingps}prestashop>config_2889a6397959c60e68de8ddaeb908648'] = 'Erro ao gravar o modo de Debug!';
+$_MODULE['<{smartmarketingps}prestashop>config_3f151d434fb49b86571704d9194d0237'] = 'Para obter a sua chave API, faça login no e-goi account BO. Vá ao seu menu de utilizador (canto superior direito), selecione "Integrações" e copie a chave API da conta.';
+$_MODULE['<{smartmarketingps}prestashop>config_a82c4ea6352017b8cbe19837e6f2a4af'] = 'Modo de Debug';
+$_MODULE['<{smartmarketingps}prestashop>config_896064c0e07ebc77b085975fb8dae297'] = 'Ative esta opção para registar as ações do módulo. Útil para resolução de problemas ou fins de suporte.';
+$_MODULE['<{smartmarketingps}prestashop>config_93cba07454f06a4a960172bbd6e2a435'] = 'Sim';
+$_MODULE['<{smartmarketingps}prestashop>config_bafd7322c6e97d25b6299b5d6fe8920b'] = 'Não';
+$_MODULE['<{smartmarketingps}prestashop>config_1c049ce8fc1ed4190a568ed3e8f64a33'] = 'Erro ao gravar o modo de debug!';
