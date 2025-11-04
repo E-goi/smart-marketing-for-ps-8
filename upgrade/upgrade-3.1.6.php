@@ -202,6 +202,10 @@ function upgrade_module_3_1_6($module)
     }
 
     DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::UPGRADE TO 3.1.6 SUCCESSFUL");
+
+    // Clear all EGOI logs at the end of upgrade
+    DebugLogger::clearLogsEgoi();
+
     return true;
 }
 ?>
