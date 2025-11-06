@@ -1606,10 +1606,10 @@ class SmartMarketingPs extends Module
             $shopId = (int)Context::getContext()->shop->id;
             $totalQty = (int)StockAvailable::getQuantityAvailableByProduct((int)$product->id, 0, $shopId);
             DebugLogger::log(
-                "[EGOI-PS17]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.1 . " . json_encode($shopId)
+                "[EGOI-PS8]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.1 . " . json_encode($shopId)
             );
             DebugLogger::log(
-                "[EGOI-PS17]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.1 . " . json_encode($totalQty)
+                "[EGOI-PS8]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.1 . " . json_encode($totalQty)
             );
             if ($sync_stock && $totalQty <= 0) {
                 return array();
