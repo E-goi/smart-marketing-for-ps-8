@@ -1592,6 +1592,7 @@ class SmartMarketingPs extends Module
         $categories = [];
         $relatedProducts = [];
 
+
         // Instancia o Product corretamente
         if (is_array($product) && !empty($product['id_product'])) {
             $product = new Product($product['id_product'], true, $lang);
@@ -1601,10 +1602,12 @@ class SmartMarketingPs extends Module
             return null; // produto inválido
         }
 
+        $shopId = (int)Context::getContext()->shop->id;
+        $totalQty = (int)StockAvailable::getQuantityAvailableByProduct((int)$product->id, 0, $shopId);
+
         // if $sync_stock is true we need to validate if the product is instock
         if (!empty($sync_stock)){
-            $shopId = (int)Context::getContext()->shop->id;
-            $totalQty = (int)StockAvailable::getQuantityAvailableByProduct((int)$product->id, 0, $shopId);
+
             DebugLogger::log(
                 "[EGOI-PS8]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.1 . " . json_encode($shopId)
             );
@@ -1687,7 +1690,8 @@ class SmartMarketingPs extends Module
             'sale_price' => $salePrice,
             'brand' => $product->manufacturer_name ?? '',
             'categories' => $categories,
-            'related_products' => $relatedProducts
+            'related_products' => $relatedProducts,
+            'in_stock' => $totalQty > 0 ? true : false,
         ];
     }
 
@@ -1707,10 +1711,11 @@ class SmartMarketingPs extends Module
             return null;
         }
 
+        $shopId = (int)Context::getContext()->shop->id;
+        $qty    = (int)StockAvailable::getQuantityAvailableByProduct($productId, $ipa, $shopId);
+
         // Stock por combinação (na shop atual)
         if ($sync_stock) {
-            $shopId = (int)Context::getContext()->shop->id;
-            $qty    = (int)StockAvailable::getQuantityAvailableByProduct($productId, $ipa, $shopId);
             if ($qty <= 0) return null; // ignorar variação sem stock
         }
 
@@ -1808,6 +1813,7 @@ class SmartMarketingPs extends Module
             'brand'        => $product->manufacturer_name,
             'categories'   => $categories,
             'related_products' => $relatedProducts,
+            'in_stock' => $qty > 0 ? true : false,
         ];
     }
 
