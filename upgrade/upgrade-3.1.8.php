@@ -1,5 +1,5 @@
 <?php
-function upgrade_module_3_1_7($module)
+function upgrade_module_3_1_8($module)
 {
     DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.8");
 
