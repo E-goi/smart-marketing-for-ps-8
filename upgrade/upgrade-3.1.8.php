@@ -1,7 +1,7 @@
 <?php
 function upgrade_module_3_1_7($module)
 {
-    DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.7");
+    DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.8");
 
     $db = Db::getInstance();
     $return = true;

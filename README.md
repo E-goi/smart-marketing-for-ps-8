@@ -33,6 +33,9 @@ For a workaround you can add this hook call to your **header.tpl**
 
 ### Changelog
 ```
+-- V.3.1.8
+   -- Fix newsletter field mapping
+   
 -- V.3.1.7
    -- Add in_stock to product sync
    -- Bump plugin version to 3.1.7
