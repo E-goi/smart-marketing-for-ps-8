@@ -181,7 +181,7 @@ class SmartMarketingPs extends Module
 		// Module metadata
 		$this->name = 'smartmarketingps';
 	    $this->tab = 'advertising_marketing';
-	    $this->version = '3.1.8';
+	    $this->version = '3.1.9';
 	    $this->author = 'E-goi';
 	    $this->need_instance = 1;
 	    $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
@@ -510,7 +510,7 @@ class SmartMarketingPs extends Module
                 'actionOrderStatusPostUpdate',
                 'actionObjectCategoryUpdateAfter',
                 'actionObjectCategoryDeleteAfter',
-                'hookActionObjectProductAddAfter',
+                'actionObjectProductAddAfter',
                 'actionObjectProductUpdateAfter',
                 'actionObjectProductDeleteAfter',
                 'actionObjectSpecificPriceAddAfter',
@@ -1263,7 +1263,7 @@ class SmartMarketingPs extends Module
 		}
 	}
 
-    public function hookactionNewsletterRegistrationAfter($params)
+    public function hookActionNewsletterRegistrationAfter($params)
     {
         return $this->addNewsletterCustomer($params);
     }
