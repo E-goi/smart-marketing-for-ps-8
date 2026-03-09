@@ -510,7 +510,7 @@ class SmartMarketingPs extends Module
                 'actionOrderStatusPostUpdate',
                 'actionObjectCategoryUpdateAfter',
                 'actionObjectCategoryDeleteAfter',
-                'hookActionObjectProductAddAfter',
+                'actionObjectProductAddAfter',
                 'actionObjectProductUpdateAfter',
                 'actionObjectProductDeleteAfter',
                 'actionObjectSpecificPriceAddAfter',
@@ -1263,7 +1263,7 @@ class SmartMarketingPs extends Module
 		}
 	}
 
-    public function hookactionNewsletterRegistrationAfter($params)
+    public function hookActionNewsletterRegistrationAfter($params)
     {
         return $this->addNewsletterCustomer($params);
     }
