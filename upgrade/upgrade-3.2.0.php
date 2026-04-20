@@ -1,7 +1,7 @@
 <?php
-function upgrade_module_3_1_8($module)
+function upgrade_module_3_2_0($module)
 {
-    DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.1.8");
+    DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.2.0");
 
     $db = Db::getInstance();
     $return = true;
@@ -128,7 +128,11 @@ function upgrade_module_3_1_8($module)
         ['egoi_id' => 2, 'name' => 'pending'],
         ['egoi_id' => 3, 'name' => 'canceled'],
         ['egoi_id' => 4, 'name' => 'completed'],
-        ['egoi_id' => 5, 'name' => 'unknown']
+        ['egoi_id' => 5, 'name' => 'unknown'],
+        ['egoi_id' => 6, 'name' => 'payment_pending'],
+        ['egoi_id' => 7, 'name' => 'payment_failed'],
+        ['egoi_id' => 8, 'name' => 'paid'],
+        ['egoi_id' => 9, 'name' => 'shipped']
     ];
 
     foreach ($states as $state) {
@@ -201,7 +205,7 @@ function upgrade_module_3_1_8($module)
         return false;
     }
 
-    DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::UPGRADE TO 3.1.7 SUCCESSFUL");
+    DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::UPGRADE TO 3.2.0 SUCCESSFUL");
 
     // Clear all EGOI logs at the end of upgrade
     DebugLogger::clearLogsEgoi();
