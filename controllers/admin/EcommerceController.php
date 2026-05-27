@@ -225,15 +225,24 @@ class EcommerceController extends SmartMarketingBaseController
      */
     protected function saveSystemAutomations()
     {
-        if (!isset($_POST['egoi_paused_toggle_hidden'])) {
-            return false;
-        }
-
-        $isPaused = (int)Tools::getValue('egoi_paused_toggle_hidden') === 1;
-        $baseUrl = Context::getContext()->shop->getBaseURL(true);
+       $baseUrl = Context::getContext()->shop->getBaseURL(true);
         $domain = parse_url($baseUrl, PHP_URL_HOST) ?: '';
 
-        $this->apiv3->setSystemAutomations($isPaused, $domain, 'abandoned_cart');
+        if (isset($_POST['egoi_paused_toggle_hidden'])) {
+            $isPausedCart = (int) Tools::getValue('egoi_paused_toggle_hidden') === 1;
+            $this->apiv3->setSystemAutomations($isPausedCart, $domain, 'abandoned_cart');
+        }
+
+        if (isset($_POST['egoi_welcome_toggle_hidden'])) {
+            $isPausedWelcome = (int) Tools::getValue('egoi_welcome_toggle_hidden') === 1;
+            $this->apiv3->setSystemAutomations($isPausedWelcome, $domain, 'welcome');
+        }
+
+        if (isset($_POST['egoi_order_status_updated_toggle_hidden'])) {
+            $isPausedOrderStatus = (int) Tools::getValue('egoi_order_status_updated_toggle_hidden') === 1;
+            $this->apiv3->setSystemAutomations($isPausedOrderStatus, $domain, 'order_status_updated');
+        }
+
         return true;
     }
 
