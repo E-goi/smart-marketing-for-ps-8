@@ -24,6 +24,10 @@ $(document).ready(function () {
     var $backInStockToggleOff = $('#egoi_back_in_stock_toggle_off');
     var $backInStockLoading = $('#egoi_back_in_stock_loading');
 
+    var $priceDropToggleOn = $('#egoi_price_drop_toggle_on');
+    var $priceDropToggleOff = $('#egoi_price_drop_toggle_off');
+    var $priceDropLoading = $('#egoi_price_drop_loading');
+
     // Fetch paused status on page load
     $.ajax({
         type: 'POST',
@@ -34,6 +38,7 @@ $(document).ready(function () {
         success: function (response) {
             $pausedLoading.hide();
             $backInStockLoading.hide();
+            $priceDropLoading.hide();
 
             try {
                 var json = typeof response === 'string' ? JSON.parse(response) : response;
@@ -43,6 +48,10 @@ $(document).ready(function () {
                 // Back in stock
                 var isBackInStockActive = false;
                 var showBackInStockWarning = false;
+
+                 // Price drop
+                var isPriceDropActive = false;
+                var showPriceDropWarning = false;
 
                 if (json && Array.isArray(json.items) && json.items.length > 0) {
                     var abandonedCartItem = null;
@@ -54,6 +63,9 @@ $(document).ready(function () {
                         }
                         if (json.items[i].type === 'back_in_stock') {
                             backInStockItem = json.items[i];
+                        }
+                        if (json.items[i].type === 'price_drop') {
+                            priceDropItem = json.items[i];
                         }
                     }
                     
@@ -70,6 +82,14 @@ $(document).ready(function () {
                             showBackInStockWarning = true;
                         } else {
                             isBackInStockActive = true;
+                        }
+                    }
+
+                    if (priceDropItem && priceDropItem.paused === false) {
+                        if (priceDropItem.url && json.current_domain && priceDropItem.url !== json.current_domain) {
+                            showPriceDropWarning = true;
+                        } else {
+                            isPriceDropActive = true;
                         }
                     }
                 }
@@ -116,6 +136,27 @@ $(document).ready(function () {
                     }
                 }
 
+                if (showPriceDropWarning) {
+                    $('#egoi_price_drop_toggle_wrapper').hide();
+                    $('#egoi_price_drop_help').hide();
+                    $('#egoi_price_drop_warning').show();
+                    $('#egoi_price_drop_toggle_hidden').val("1");
+                } else {
+                    $('#egoi_price_drop_toggle_wrapper').show();
+                    $('#egoi_price_drop_help').show();
+                    $('#egoi_price_drop_warning').hide();
+
+                    if (isPriceDropActive) {
+                        $priceDropToggleOn.prop('checked', true);
+                        $priceDropToggleOff.prop('checked', false);
+                        $('#egoi_price_drop_toggle_hidden').val("0");
+                    } else {
+                        $priceDropToggleOn.prop('checked', false);
+                        $priceDropToggleOff.prop('checked', true);
+                        $('#egoi_price_drop_toggle_hidden').val("1");
+                    }
+                }
+
             } catch (e) {
                 console.error('Error parsing response', e);
                 $pausedToggleOn.prop('checked', false);
@@ -129,6 +170,12 @@ $(document).ready(function () {
                 $('#egoi_back_in_stock_toggle_hidden').val("1");
                 $('#egoi_back_in_stock_toggle_wrapper').show();
                 $('#egoi_back_in_stock_help').show();
+
+                $priceDropToggleOn.prop('checked', false);
+                $priceDropToggleOff.prop('checked', true);
+                $('#egoi_price_drop_toggle_hidden').val("1");
+                $('#egoi_price_drop_toggle_wrapper').show();
+                $('#egoi_price_drop_help').show();
             }
         },
         error: function () {
@@ -150,6 +197,9 @@ $(document).ready(function () {
 
     $('input[name="egoi_back_in_stock_toggle"]').on('change', function () {
         $('#egoi_back_in_stock_toggle_hidden').val($(this).val());
+    });
+    $('input[name="egoi_price_drop_toggle"]').on('change', function () {
+        $('#egoi_price_drop_toggle_hidden').val($(this).val());
     });
 
     function interactionOrders(store, page) {
