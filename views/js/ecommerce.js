@@ -56,6 +56,7 @@ $(document).ready(function () {
                 if (json && Array.isArray(json.items) && json.items.length > 0) {
                     var abandonedCartItem = null;
                     var backInStockItem = null;
+                    var priceDropItem = null;
 
                     for (var i = 0; i < json.items.length; i++) {
                         if (json.items[i].type === 'abandoned_cart') {
