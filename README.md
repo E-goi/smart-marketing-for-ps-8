@@ -1,4 +1,4 @@
-# Egoi Email Marketing for Prestashop 8.X.X (V.3.2.1)
+# Egoi Email Marketing for Prestashop 8.X.X (V.3.2.2)
 
 Keep your contacts sync with E-goi and increase your sales! Easily design email marketing or SMS campaigns, create the segmentation you want for your contacts or build intuitive automation processes for all channels available on E-goi.
 
@@ -33,6 +33,9 @@ For a workaround you can add this hook call to your **header.tpl**
 
 ### Changelog
 ```
+-- V.3.2.2
+   -- Add price drop system journey
+
 -- V.3.2.1
    -- Add back in stock system journey
 
