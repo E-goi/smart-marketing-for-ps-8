@@ -78,6 +78,15 @@ abstract class SmartMarketingBaseController extends ModuleAdminController
 
         // on failture redirect to configuration page
         $this->assign('redirect', $this->redirectToConfig());
+
+        try {
+            $newVersionMessage = $this->module->getNewVersionMessage();
+            if ($newVersionMessage) {
+                $this->warnings[] = $newVersionMessage;
+            }
+        } catch (Exception $e) {
+            // If there is an error, it does nothing
+        }
 	}
 
     /**
