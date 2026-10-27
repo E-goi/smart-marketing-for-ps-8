@@ -324,3 +324,7 @@ $_MODULE['<{smartmarketingps}prestashop>ecommerce_3538be017c56bf13080b5a043082f2
 
 $_MODULE['<{smartmarketingps}prestashop>ecommerce_c8f312df214e2295809027c6ca79d232'] = 'Automatizar comunicações de produtos com baixa de preço';
 $_MODULE['<{smartmarketingps}prestashop>ecommerce_de0c631c0f8f116c30843a83e9d04047'] = 'Envie automaticamente comunicações de produtos que baixaram de preço.';
+
+$_MODULE['<{smartmarketingps}prestashop>smartmarketingps_160e409530860101d05e8bb49cfc9586'] = 'Está disponível uma nova versão (%s). Faça o download em %s';
+$_MODULE['<{smartmarketingps}prestashop>smartmarketingps_2ee394016ed12287f0a4b493cc6ffdc5'] = 'Está disponível uma nova versão do Smart Marketing (%s). Está a utilizar a versão %s.';
+$_MODULE['<{smartmarketingps}prestashop>smartmarketingps_0043ff923ebf82e75192063c706818cb'] = 'Faça o download aqui';

@@ -31,6 +31,8 @@ class SmartMarketingPs extends Module
     const SMS_REMINDER_DEFAULT_TIME_CONFIG = 'sms_reminder_default_time_config';
     const PLUGIN_VERSION_KEY = 'egoi_plugin_version_req';
     const PLUGIN_VERSION_KEY_TTL = 'egoi_plugin_version_req_ttl';
+    const PLUGIN_VERSION_MANIFEST_KEY = 'prestashop8';
+    const PLUGIN_DOWNLOAD_URL = 'https://goidini.e-goi.com/index/home';
 
     const SMS_MESSAGES_DEFAULT_LANG_CONFIGURATION = 'sms_messages_default_lang';
     const SMS_REMINDERS_DEFAULT_LANG_CONFIGURATION = 'sms_reminders_default_lang';
@@ -113,6 +115,13 @@ class SmartMarketingPs extends Module
     protected $goidini;
 
     /**
+     * Latest available plugin version, null when up to date, false when not checked yet
+     *
+     * @var string|null|false $newVersion
+     */
+    protected $newVersion = false;
+
+    /**
      * @var array[] $menuTab
      */
     public $menus = [
@@ -181,7 +190,7 @@ class SmartMarketingPs extends Module
 		// Module metadata
 		$this->name = 'smartmarketingps';
 	    $this->tab = 'advertising_marketing';
-	    $this->version = '3.2.2';
+	    $this->version = '3.2.3';
 	    $this->author = 'E-goi';
 	    $this->need_instance = 1;
 	    $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
@@ -222,11 +231,13 @@ class SmartMarketingPs extends Module
 
         // check newsletter submissions anywhere
 		//$this->checkNewsletterSubmissions();
-        $current_context = Context::getContext();
         try {
-            // Checks that the controller object is defined and that its controller_type property is 'admin'
-            if (isset($current_context->controller) && $current_context->controller->controller_type == 'admin') {
-                $this->checkPluginVersion();
+            if (defined('_PS_ADMIN_DIR_') && $this->getNewVersion() && empty($this->warning)) {
+                $this->warning = sprintf(
+                    $this->l('A new version (%s) is available. Download it at %s'),
+                    $this->getNewVersion(),
+                    self::PLUGIN_DOWNLOAD_URL
+                );
             }
         } catch (Exception $e) {
             // If there is an error, it does nothing
@@ -235,107 +246,67 @@ class SmartMarketingPs extends Module
 
 	}
 
-    public function checkPluginVersion(){
-        $lastVersion = Configuration::get(self::PLUGIN_VERSION_KEY);
-        $lastReq = Configuration::get(self::PLUGIN_VERSION_KEY_TTL);
+    /**
+     * Returns the latest available plugin version if newer than the installed one
+     *
+     * @return string|null
+     */
+    public function getNewVersion()
+    {
+        if ($this->newVersion === false) {
+            $this->newVersion = $this->checkPluginVersion();
+        }
 
-        if (empty($lastVersion) || empty($lastReq) || (isset($lastReq) && $lastReq + 3600 < time() ))
-        {
-            $lastVersion = $this->goidini->getLatestPluginVersions();
-            Configuration::updateValue(self::PLUGIN_VERSION_KEY, $lastVersion);
+        return $this->newVersion;
+    }
+
+    /**
+     * Returns the new version notice (HTML), or an empty string when up to date
+     *
+     * @return string
+     */
+    public function getNewVersionMessage()
+    {
+        $newVersion = $this->getNewVersion();
+        if (!$newVersion) {
+            return '';
+        }
+
+        return sprintf(
+            $this->l('A new version of Smart Marketing (%s) is available. You are using version %s.'),
+            $newVersion,
+            $this->version
+        ) . ' <a href="' . self::PLUGIN_DOWNLOAD_URL . '" target="_blank" rel="noopener">'
+            . $this->l('Download it here') . '</a>.';
+    }
+
+    /**
+     * Fetches the plugin versions manifest from Goidini (cached for 1 hour)
+     * and compares it with the installed version
+     *
+     * @return string|null
+     */
+    public function checkPluginVersion()
+    {
+        $manifest = Configuration::get(self::PLUGIN_VERSION_KEY);
+        $lastReq = (int)Configuration::get(self::PLUGIN_VERSION_KEY_TTL);
+
+        if ($lastReq + 3600 < time()) {
+            $manifest = $this->goidini->getLatestPluginVersions();
+            // Failures are cached too, so an unreachable Goidini is not requested on every admin page
+            Configuration::updateValue(self::PLUGIN_VERSION_KEY, $manifest ?: '');
             Configuration::updateValue(self::PLUGIN_VERSION_KEY_TTL, time());
         }
 
-        $lastVersionObj = json_decode($lastVersion, true);
-        $lastReq = Configuration::get(self::PLUGIN_VERSION_KEY_TTL);
-        if(empty($lastVersionObj) || empty($lastVersionObj['prestashop']) || (isset($lastReq) && is_numeric($lastReq) && ($lastReq + 3600) < time()) ){
-            Configuration::updateValue(self::PLUGIN_VERSION_KEY, 0);
-            return;
+        $manifest = json_decode((string)$manifest, true);
+        if (empty($manifest[self::PLUGIN_VERSION_MANIFEST_KEY])) {
+            return null;
         }
 
-        // if(version_compare($lastVersionObj['prestashop'], $this->version, '>')) {
-        //     $this->createPopupAcknowledge("[E-goi] New Version (".$lastVersionObj['prestashop'].")", "The new version is ready to download, <a href=\"https://goidini.e-goi.com/resources/plugins/prestashop/smart-marketing-ps.1.7.latest.zip\" target=\"_blank\" >click here</a>!");
-        // }
+        $latestVersion = (string)$manifest[self::PLUGIN_VERSION_MANIFEST_KEY];
 
+        return version_compare($latestVersion, $this->version, '>') ? $latestVersion : null;
     }
-
-    protected function createPopupAcknowledge($title, $message){
-        ?>
-
-        <style>
-            .egoi-popup-notification>h3>.egoi_close,
-            .egoi-popup-notification>p,
-            .egoi-popup-notification>h3{
-                color: white;
-            }
-
-            .egoi-popup-notification>h3>.egoi_close{
-                cursor: pointer;
-            }
-
-            .egoi-popup-notification>h3{
-                display: flex;
-                justify-content: space-between;
-                margin-top: 0;
-            }
-
-            .egoi-popup-notification>p{
-                margin-bottom: 0;
-            }
-
-
-            .egoi-popup-notification>p>a{
-                color: #2a2a2a !important;
-                font-weight: bold;
-            }
-
-            .egoi-popup-notification{
-                position: fixed;
-                top: 40px;
-                right: 10px;
-                border: 1px solid #dbe6e9;
-                border-radius: 5px;
-                -webkit-box-shadow: 0 0 4px 0 rgb(0 0 0 / 6%);
-                box-shadow: 0 0 4px 0 rgb(0 0 0 / 6%);
-                background-color: #25b9d7;
-                z-index: 9999;
-                padding: 20px;
-            }
-        </style>
-
-        <script>
-
-            window.addEventListener('load', function () {
-                (function (){
-                    if( !localStorage.getItem("closed_egoi_update") && document.getElementsByClassName("egoi-popup-notification").length > 0 ){
-                        document.getElementsByClassName("egoi-popup-notification")[0].style.display = 'block'
-                    }
-                    if( document.getElementsByClassName("egoi_close").length >0 ){
-                        document.getElementsByClassName("egoi_close")[0].onclick = () => {
-                            if( document.getElementsByClassName("egoi-popup-notification").length > 0){
-                                document.getElementsByClassName("egoi-popup-notification")[0].style.display = 'none';
-                                localStorage.setItem("closed_egoi_update", 'true');
-                            }
-                        }
-                    }
-                })();
-            });
-
-        </script>
-
-        <div class="egoi-popup-notification" style="display: none;">
-            <h3>
-                <?php echo $title; ?>
-                <a class="egoi_close" >x</a>
-            </h3>
-            <p>
-                <?php echo $message; ?>
-            </p>
-        </div>
-
-        <?php
-    }
-
 
 	/**
 	 * Install App
@@ -525,9 +496,74 @@ class SmartMarketingPs extends Module
                 'displayTop',
                 'displayFooter',
                 'egoiDisplayTE',
-                'displayFooterProduct'
+                'displayFooterProduct',
+                'displayBackOfficeHeader'
             )
         );
+    }
+
+    /**
+     * Shows a dismissible new version notice on every back office page
+     *
+     * @return string
+     */
+    public function hookDisplayBackOfficeHeader($params)
+    {
+        // Module pages already show the notice as a page warning
+        if ($this->context->controller instanceof SmartMarketingBaseController
+            || Tools::getValue('configure') === $this->name
+        ) {
+            return '';
+        }
+
+        try {
+            $message = $this->getNewVersionMessage();
+        } catch (Exception $e) {
+            return '';
+        }
+
+        if (!$message) {
+            return '';
+        }
+
+        $title = json_encode('E-goi Smart Marketing');
+        $version = json_encode($this->getNewVersion());
+        $message = json_encode($message);
+
+        return "<style>
+            .egoi-update-notice{position:fixed;top:50px;right:15px;max-width:420px;z-index:9999;padding:15px 20px;
+                border-radius:5px;background-color:#25b9d7;color:#fff;box-shadow:0 2px 8px 0 rgb(0 0 0 / 20%);}
+            .egoi-update-notice h4{display:flex;justify-content:space-between;margin:0 0 8px;color:#fff;font-weight:bold;}
+            .egoi-update-notice p{margin:0;color:#fff;}
+            .egoi-update-notice a{color:#2a2a2a !important;font-weight:bold;}
+            .egoi-update-notice .egoi-update-close{cursor:pointer;color:#fff !important;margin-left:15px;}
+        </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var storageKey = 'egoi_update_dismissed';
+                var version = $version;
+                try {
+                    var dismissed = JSON.parse(localStorage.getItem(storageKey) || '{}');
+                    // Dismissing hides the notice for this version during 7 days
+                    if (dismissed.version === version && dismissed.until > Date.now()) {
+                        return;
+                    }
+                } catch (e) {}
+
+                var notice = document.createElement('div');
+                notice.className = 'egoi-update-notice';
+                notice.innerHTML = '<h4><span></span><a class=\"egoi-update-close\">&times;</a></h4><p></p>';
+                notice.querySelector('h4 span').textContent = $title;
+                notice.querySelector('p').innerHTML = $message;
+                notice.querySelector('.egoi-update-close').onclick = function () {
+                    notice.parentNode.removeChild(notice);
+                    try {
+                        localStorage.setItem(storageKey, JSON.stringify({version: version, until: Date.now() + 7 * 24 * 3600 * 1000}));
+                    } catch (e) {}
+                };
+                document.body.appendChild(notice);
+            });
+        </script>";
     }
 
     /**
@@ -1217,7 +1253,13 @@ class SmartMarketingPs extends Module
             }
 	    }
 
-	    return $this->displayForm();
+	    try {
+	        $newVersionMessage = $this->getNewVersionMessage();
+	    } catch (Exception $e) {
+	        $newVersionMessage = '';
+	    }
+
+	    return ($newVersionMessage ? $this->displayWarning($newVersionMessage) : '') . $this->displayForm();
 	}
 
 	/**
