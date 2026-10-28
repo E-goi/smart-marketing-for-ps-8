@@ -1,7 +1,7 @@
 <?php
 function upgrade_module_3_2_3($module)
 {
-    DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.2.3");
+    DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::LOG: START UPGRADE TO 3.2.4");
 
     $db = Db::getInstance();
     $return = true;
@@ -210,7 +210,7 @@ function upgrade_module_3_2_3($module)
         return false;
     }
 
-    DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::UPGRADE TO 3.2.3 SUCCESSFUL");
+    DebugLogger::log("[EGOI-PS8]::" . __FUNCTION__ . "::UPGRADE TO 3.2.4 SUCCESSFUL");
 
     // Clear all EGOI logs at the end of upgrade
     DebugLogger::clearLogsEgoi();

@@ -236,45 +236,21 @@ class SmsNotificationsController extends SmartMarketingBaseController
      */
     private function insertTemplate($orderStatus, $client, $admin)
     {
-        $lang = Configuration::get(SmartMarketingPs::SMS_MESSAGES_DEFAULT_LANG_CONFIGURATION);
-        try {
-            $insert = $this->insertNotifQuery($orderStatus, $lang, $client, $admin);
-        } catch (PrestaShopDatabaseException $exception) {
-            $insert = false;
-        }
+        $lang = (int) Configuration::get(SmartMarketingPs::SMS_MESSAGES_DEFAULT_LANG_CONFIGURATION);
 
-        if (!$insert) {
-            Db::getInstance()->update(
-                'egoi_sms_notif_messages',
-                array(
-                    'client_message' => $client,
-                    'admin_message' => $admin
-                ),
-                "order_status_id=$orderStatus AND lang_id=$lang"
-            );
-        }
-    }
-
-    /**
-     * Get query to insert notification
-     *
-     * @param $orderStatus
-     * @param $lang
-     * @param $client
-     * @param $admin
-     *
-     * @return mixed
-     */
-    private function insertNotifQuery($orderStatus, $lang, $client, $admin)
-    {
+        // REPLACE keeps the save idempotent: PS 8 throws PrestaShopException on duplicate keys,
+        // so relying on a failed INSERT to fall back to UPDATE breaks the page
         return Db::getInstance()->insert(
             'egoi_sms_notif_messages',
             array(
-                'order_status_id' => $orderStatus,
+                'order_status_id' => (int) $orderStatus,
                 'lang_id' => $lang,
                 'client_message' => $client,
                 'admin_message' => $admin
-            )
+            ),
+            false,
+            true,
+            Db::REPLACE
         );
     }
 
